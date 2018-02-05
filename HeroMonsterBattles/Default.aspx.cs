@@ -11,16 +11,18 @@ namespace HeroMonsterBattles
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            character Hero = new character("Hero",100,50,10);
-            character Monster = new character("Monster", 100,50,10);
+            character Hero = new character("Hero",100,50,false);
+            character Monster = new character("Monster", 100,50,false);
+
+            Dice dice = new Dice();
 
             DisplayStats(Hero);
             DisplayStats(Monster);
             resultLabel.Text += "<br /> ========= <br />";
 
 
-            Monster.defend(Hero.attack());
-            Hero.defend(Monster.attack());
+            Monster.Defend(Hero.Attack(dice));
+            Hero.Defend(Monster.Attack(dice));
 
 
             DisplayStats(Hero);
@@ -45,9 +47,9 @@ namespace HeroMonsterBattles
         public string Name { get; set; }
         public int Health  { get; set; }
         public int DamageMaximum { get; set; }
-        public int AttackBonus { get; set; }
+        public bool AttackBonus { get; set; }
 
-        public character(string name, int health, int damageMaximum, int attackBonus)
+        public character(string name, int health, int damageMaximum, bool attackBonus)
         {
             Name = name ?? throw new ArgumentNullException(nameof(name));
             Health = health;
@@ -55,34 +57,27 @@ namespace HeroMonsterBattles
             AttackBonus = attackBonus;
         }
 
-        public int attack()
+        public int Attack(Dice dice)
         {
-            Random random = new Random();
-            
-            return random.Next(this.DamageMaximum);
-
+            return dice.Roll(this.DamageMaximum);
         }
 
-        public int defend(int damage)
+        public void Defend(int damage)
         {
             this.Health -= damage;
-            return this.Health;
-
         }
-        public string showCharacterStats()
-        {
-            string result = "";
-            result += this.Name + "<br />" +
-                "Health: " + this.Health + "<br />" +
-                "Damage Maximum: " + this.DamageMaximum + "<br />" +
-                "Attach Bonus: " + this.AttackBonus + "<br />";
+        
+    }
 
-            return result;
-        }
+    class Dice
+    {
+        public int Sides { get; set; }
 
-        public string showAttack(int attackValue)
+        Random random = new Random();
+
+        public int Roll(int sides)
         {
-            return "";   
+            return random.Next(sides);
         }
     }
 }
